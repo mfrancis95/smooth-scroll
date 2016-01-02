@@ -1,7 +1,5 @@
-var smoothScroll = function(properties) {
-    properties = properties || {};
-    var callback = properties.callback;
-    var position = properties.position || 0;
+function smoothScroll(position, duration, ease, callback) {
+    position = position || 0;
     var start = window.scrollY;
     if (position === start) {
         if (callback) {
@@ -10,8 +8,7 @@ var smoothScroll = function(properties) {
     }
     else {
         var change = position - start;
-        var duration = properties.duration || 500;
-        var ease = properties.ease;
+        duration = duration || 500;
         if (!ease) {
             ease = function (time, start, change, duration) {
                 return change * time / duration + start;
@@ -33,4 +30,4 @@ var smoothScroll = function(properties) {
         };
         step();
     }
-};
+}
