@@ -1,4 +1,4 @@
-function smoothScroll(position, duration, ease, interruptable, callback) {
+function smoothScroll(position, duration, ease, interruptible, callback) {
     position = position || 0;
     var start = window.scrollY;
     if (position === start) {
@@ -14,11 +14,12 @@ function smoothScroll(position, duration, ease, interruptable, callback) {
             };
         }
         var run = true;
-        if (interruptable) {
-            interruptable = function() {
+        if (interruptible) {
+            interruptible = function() {
                 run = false;
             };
-            window.addEventListener("wheel", interruptable);
+            window.addEventListener("touchmove", interruptible);
+            window.addEventListener("wheel", interruptible);
         }
         var startTime = Date.now();
         var change = position - start;
@@ -35,8 +36,9 @@ function smoothScroll(position, duration, ease, interruptable, callback) {
                 requestAnimationFrame(step);
             }
             else {
-                if (interruptable) {
-                    window.removeEventListener("wheel", interruptable);
+                if (interruptible) {
+                    window.removeEventListener("touchmove", interruptible);
+                    window.removeEventListener("wheel", interruptible);
                 }
                 if (callback) {
                     callback();
