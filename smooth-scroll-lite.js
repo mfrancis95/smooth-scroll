@@ -8,7 +8,7 @@ function smoothScroll(position, duration, ease, interruptible, callback) {
     }
     else {
         duration = duration || 500;
-        if (!ease) {
+        if (typeof ease !== "function") {
             ease = function(time, start, change, duration) {
                 return change * time / duration + start;
             };
