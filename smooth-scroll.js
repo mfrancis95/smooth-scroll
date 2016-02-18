@@ -120,7 +120,7 @@ function smoothScroll(position, duration, ease, interruptible, callback) {
         }
         var startTime = Date.now();
         var change = position - start;
-        var step = function () {
+        var step = function() {
             if (run) {
                 var time = Date.now() - startTime;
                 if (time <= duration) {
@@ -144,4 +144,18 @@ function smoothScroll(position, duration, ease, interruptible, callback) {
         };
         step();
     }
+}
+
+var elements = document.getElementsByClassName("smooth-scroll");
+for (var i = 0; i < elements.length; i++) {
+    elements[i].addEventListener("click", function(event) {
+        event.preventDefault();
+        var dataset = this.dataset;
+        var href = this.getAttribute("href");
+        if (dataset.history) {
+            history.pushState(null, null, href);
+        }
+        var position = document.getElementById(href.slice(1)).offsetTop;
+        smoothScroll(position, dataset.duration, dataset.ease, dataset.interruptible);
+    });
 }

@@ -23,7 +23,7 @@ function smoothScroll(position, duration, ease, interruptible, callback) {
         }
         var startTime = Date.now();
         var change = position - start;
-        var step = function () {
+        var step = function() {
             if (run) {
                 var time = Date.now() - startTime;
                 if (time <= duration) {
