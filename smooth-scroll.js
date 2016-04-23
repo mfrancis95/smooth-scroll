@@ -146,16 +146,16 @@ function smoothScroll(position, duration, ease, interruptible, callback) {
     }
 }
 
-var elements = document.getElementsByClassName("smooth-scroll");
-for (var i = 0; i < elements.length; i++) {
-    elements[i].addEventListener("click", function(event) {
+Element.prototype.smoothScrollify = function() {
+    var self = this;
+    self.addEventListener("click", function(event) {
         event.preventDefault();
-        var dataset = this.dataset;
-        var href = this.getAttribute("href");
+        var dataset = self.dataset;
+        var href = self.getAttribute("href");
         if (dataset.history) {
             history.pushState(null, null, href);
         }
         var position = document.getElementById(href.slice(1)).offsetTop;
         smoothScroll(position, dataset.duration, dataset.ease, dataset.interruptible);
     });
-}
+};
