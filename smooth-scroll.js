@@ -92,7 +92,9 @@ var easingFunctions = {
 };
 
 function smoothScroll(position, duration, ease, interruptible, callback) {
-    position = position || 0;
+    if (!position) {
+        position = 0;
+    }
     var start = window.scrollY;
     if (position === start) {
         if (callback) {
@@ -100,7 +102,9 @@ function smoothScroll(position, duration, ease, interruptible, callback) {
         }
     }
     else {
-        duration = duration || 500;
+        if (duration !== 0 && !duration) {
+            duration = 500;
+        }
         switch (typeof ease) {
             case "function":
                 break;
@@ -111,12 +115,13 @@ function smoothScroll(position, duration, ease, interruptible, callback) {
                 ease = easingFunctions.linear;
         }
         var run = true;
-        if (interruptible) {
-            interruptible = function() {
+        if (interruptible && interruptible.length > 0) {
+            var interrupt = function() {
                 run = false;
             };
-            window.addEventListener("touchmove", interruptible);
-            window.addEventListener("wheel", interruptible);
+            for (var i = 0; i < interruptible.length; i++) {
+                document.addEventListener(interruptible[i], interrupt);
+            }
         }
         var startTime = Date.now();
         var change = position - start;
@@ -134,8 +139,9 @@ function smoothScroll(position, duration, ease, interruptible, callback) {
             }
             else {
                 if (interruptible) {
-                    window.removeEventListener("touchmove", interruptible);
-                    window.removeEventListener("wheel", interruptible);
+                    for (var i = 0; i < interruptible.length; i++) {
+                        document.removeEventListener(interruptible[i], interrupt);
+                    }
                 }
                 if (callback) {
                     callback();
@@ -156,9 +162,14 @@ Element.prototype.smoothScrollify = function() {
             history.pushState(null, null, href);
         }
         var position = document.getElementById(href.slice(1)).offsetTop;
-        var callback = !dataset.callback ? null : function() {
-            window[dataset.callback](self);
-        };
-        smoothScroll(position, dataset.duration, dataset.ease, dataset.interruptible, callback);
+        if (dataset.interruptible) {
+            var interruptible = dataset.interruptible.split(" ");
+        }
+        if (dataset.callback) {
+            var callback = function() {
+                window[dataset.callback](self);
+            };
+        }
+        smoothScroll(position, dataset.duration, dataset.ease, interruptible, callback);
     });
 };
