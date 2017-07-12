@@ -11,7 +11,7 @@ var easingFunctions = {
     easeInOutQuad: function(time, start, change, duration) {
         if ((time /= duration / 2) < 1) {
             return change / 2 * time * time + start;
-        } 
+        }
         return -change / 2 * ((--time) * (time - 2) - 1) + start;
     },
     easeInCubic: function(time, start, change, duration) {
@@ -152,24 +152,46 @@ function smoothScroll(position, duration, ease, interruptible, callback) {
     }
 }
 
-Element.prototype.smoothScrollify = function() {
+Element.prototype.smoothScrollify = function($scope, attrs) {
     var self = this;
+    if (!attrs) {
+        attrs = self.dataset;
+    }
     self.addEventListener("click", function(event) {
         event.preventDefault();
-        var dataset = self.dataset;
-        var href = self.getAttribute("href");
-        if (dataset.history) {
+        var href= self.getAttribute("href");
+        if (attrs.history) {
             history.pushState(null, null, href);
         }
         var position = document.getElementById(href.slice(1)).offsetTop;
-        if (dataset.interruptible) {
-            var interruptible = dataset.interruptible.split(" ");
+        if (attrs.interruptible) {
+            var interruptible = attrs.interruptible.split(" ");
         }
-        if (dataset.callback) {
-            var callback = function() {
-                window[dataset.callback](self);
-            };
+        if (attrs.callback) {
+            if ($scope) {
+                var callback = function() {
+                    $scope[attrs.callback](self);
+                };
+            }
+            else {
+                var callback = function() {
+                    window[dataset.callback](self);
+                };
+            }
         }
-        smoothScroll(position, dataset.duration, dataset.ease, interruptible, callback);
+        smoothScroll(position, attrs.duration, attrs.ease, interruptible, callback);
     });
 };
+
+if (angular) {
+    angular.module("smooth-scroll", []).directive("smoothScroll", function() {
+        return function($scope, element, attrs) {
+            element[0].smoothScrollify($scope, attrs);
+        }
+    });
+}
+
+var elements = document.getElementsByClassName("smooth-scroll");
+for (var i = 0; i < elements.length; i++) {
+    elements[i].smoothScrollify();
+}
